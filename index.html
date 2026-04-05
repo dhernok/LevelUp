@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LEVELUP — Tu Vida, Tu Aventura</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a10;
+    --bg2: #0a1220;
+    --bg3: #0f1a2e;
+    --panel: #0d1525;
+    --border: #1a2a4a;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #f59e0b;
+    --gold: #ffd700;
+    --red: #ef4444;
+    --green: #10b981;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --glow: 0 0 20px rgba(0,212,255,0.3);
+    --glow2: 0 0 20px rgba(124,58,237,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  /* Background grid */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none; z-index:0;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    background: rgba(5,10,16,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo {
+    font-family:'Orbitron',sans-serif;
+    font-size:18px; font-weight:900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    letter-spacing:3px;
+  }
+  .nav-tabs { display:flex; gap:4px; }
+  .nav-tab {
+    padding: 6px 14px;
+    border:none; background:transparent;
+    color: var(--muted); font-family:'Rajdhani',sans-serif;
+    font-size:13px; font-weight:600; letter-spacing:1px;
+    cursor:pointer; border-radius:6px;
+    transition: all 0.2s; text-transform:uppercase;
+  }
+  .nav-tab.active, .nav-tab:hover {
+    color: var(--accent); background: rgba(0,212,255,0.08);
+  }
+
+  /* ── SCREENS ── */
+  .screen { display:none; padding: 72px 16px 20px; max-width:480px; margin:0 auto; }
+  .screen.active { display:block; }
+
+  /* ── HERO CARD (perfil) ── */
+  .hero-card {
+    background: linear-gradient(135deg, var(--bg3), var(--panel));
+    border: 1px solid var(--border);
+    border-radius:16px; padding:20px;
+    position:relative; overflow:hidden;
+    margin-bottom:16px;
+    box-shadow: var(--glow);
+  }
+  .hero-card::before {
+    content:'';
+    position:absolute; top:-50%; right:-30%;
+    width:200px; height:200px;
+    background: radial-gradient(circle, rgba(0,212,255,0.1), transparent 70%);
+    pointer-events:none;
+  }
+  .hero-top { display:flex; align-items:center; gap:16px; margin-bottom:16px; }
+  .hero-avatar {
+    width:64px; height:64px; border-radius:12px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    display:flex; align-items:center; justify-content:center;
+    font-size:28px; flex-shrink:0;
+    border: 2px solid var(--accent);
+    box-shadow: var(--glow);
+  }
+  .hero-info { flex:1; }
+  .hero-name {
+    font-family:'Cinzel',sans-serif; font-size:18px; font-weight:600;
+    color:#fff; margin-bottom:2px;
+  }
+  .hero-class {
+    font-size:12px; color:var(--accent); letter-spacing:2px;
+    text-transform:uppercase; font-weight:600;
+  }
+  .hero-level {
+    font-family:'Orbitron',sans-serif;
+    background: linear-gradient(135deg, var(--accent3), var(--gold));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    font-size:28px; font-weight:900; text-align:right;
+  }
+  .hero-level span { display:block; font-size:10px; color:var(--muted); -webkit-text-fill-color:var(--muted); letter-spacing:1px; }
+
+  .xp-bar-wrap { margin-bottom:12px; }
+  .xp-label { display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:4px; }
+  .xp-bar {
+    height:8px; border-radius:4px;
+    background: rgba(255,255,255,0.05);
+    overflow:hidden; border:1px solid var(--border);
+  }
+  .xp-fill {
+    height:100%; border-radius:4px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.6s ease;
+    box-shadow: 0 0 10px rgba(0,212,255,0.5);
+  }
+
+  .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .stat-box {
+    background: rgba(255,255,255,0.03); border:1px solid var(--border);
+    border-radius:10px; padding:10px; text-align:center;
+  }
+  .stat-val {
+    font-family:'Orbitron',sans-serif; font-size:20px; font-weight:700;
+    color: var(--accent); margin-bottom:2px;
+  }
+  .stat-lbl { font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+
+  /* ── SECTION HEADER ── */
+  .sec-header {
+    display:flex; align-items:center; gap:8px;
+    margin-bottom:12px; margin-top:20px;
+  }
+  .sec-title {
+    font-family:'Cinzel',sans-serif; font-size:14px; font-weight:600;
+    color:var(--accent); letter-spacing:2px; text-transform:uppercase;
+  }
+  .sec-line { flex:1; height:1px; background:var(--border); }
+
+  /* ── MISSION CARD ── */
+  .mission-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius:12px; padding:14px 16px;
+    margin-bottom:10px;
+    display:flex; align-items:center; gap:12px;
+    cursor:pointer; transition: all 0.2s;
+    position:relative; overflow:hidden;
+  }
+  .mission-card:hover { border-color: var(--accent); box-shadow: var(--glow); }
+  .mission-card.done { opacity:0.5; }
+  .mission-card.done .mission-icon { filter:grayscale(1); }
+  .mission-icon { font-size:22px; flex-shrink:0; }
+  .mission-info { flex:1; }
+  .mission-name { font-size:15px; font-weight:600; color:#fff; margin-bottom:2px; }
+  .mission-desc { font-size:12px; color:var(--muted); }
+  .mission-xp {
+    font-family:'Orbitron',sans-serif; font-size:12px;
+    color:var(--accent3); font-weight:700; white-space:nowrap;
+  }
+  .mission-check {
+    width:22px; height:22px; border-radius:6px;
+    border: 2px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    transition: all 0.2s; flex-shrink:0;
+  }
+  .mission-card.done .mission-check {
+    background: var(--green); border-color:var(--green);
+  }
+  .mission-diff {
+    position:absolute; top:0; left:0; width:3px; height:100%;
+    border-radius:12px 0 0 12px;
+  }
+  .diff-easy { background:var(--green); }
+  .diff-med { background:var(--accent3); }
+  .diff-hard { background:var(--red); }
+
+  /* ── WORKOUT ── */
+  .workout-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+  .workout-card {
+    background: var(--panel); border:1px solid var(--border);
+    border-radius:12px; padding:14px; cursor:pointer;
+    transition: all 0.2s; text-align:center;
+  }
+  .workout-card:hover { border-color:var(--accent2); box-shadow:var(--glow2); }
+  .workout-card.selected { border-color:var(--accent2); background:rgba(124,58,237,0.15); }
+  .workout-emoji { font-size:28px; margin-bottom:6px; }
+  .workout-name { font-size:13px; font-weight:700; color:#fff; margin-bottom:2px; }
+  .workout-meta { font-size:11px; color:var(--muted); }
+
+  .exercise-list { display:flex; flex-direction:column; gap:8px; }
+  .exercise-item {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:10px; padding:12px 14px;
+    display:flex; align-items:center; gap:12px;
+  }
+  .ex-num {
+    font-family:'Orbitron',sans-serif; font-size:14px; font-weight:700;
+    color:var(--accent2); width:28px; text-align:center; flex-shrink:0;
+  }
+  .ex-info { flex:1; }
+  .ex-name { font-size:14px; font-weight:600; color:#fff; }
+  .ex-sets { font-size:12px; color:var(--muted); margin-top:1px; }
+  .ex-xp { font-size:11px; color:var(--accent3); font-weight:600; }
+
+  /* ── HABITOS ── */
+  .habit-item {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:12px; padding:14px 16px;
+    margin-bottom:10px; display:flex; align-items:center; gap:12px;
+  }
+  .habit-icon { font-size:22px; flex-shrink:0; }
+  .habit-info { flex:1; }
+  .habit-name { font-size:15px; font-weight:600; color:#fff; }
+  .habit-streak { font-size:12px; color:var(--accent3); margin-top:2px; }
+  .habit-dots { display:flex; gap:4px; margin-top:6px; }
+  .habit-dot {
+    width:10px; height:10px; border-radius:50%;
+    background:var(--border);
+  }
+  .habit-dot.done { background:var(--green); box-shadow:0 0 6px var(--green); }
+  .habit-toggle {
+    width:44px; height:24px; border-radius:12px;
+    background:var(--border); cursor:pointer;
+    position:relative; transition:0.2s; flex-shrink:0; border:none;
+  }
+  .habit-toggle.on { background:var(--green); }
+  .habit-toggle::after {
+    content:''; position:absolute; top:3px; left:3px;
+    width:18px; height:18px; border-radius:50%; background:#fff;
+    transition:0.2s;
+  }
+  .habit-toggle.on::after { left:23px; }
+
+  /* ── AI CHAT ── */
+  .ai-header {
+    display:flex; align-items:center; gap:12px;
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:12px; padding:14px 16px; margin-bottom:16px;
+  }
+  .ai-orb {
+    width:40px; height:40px; border-radius:50%;
+    background: linear-gradient(135deg,var(--accent2),var(--accent));
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; flex-shrink:0;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100%{box-shadow:0 0 8px rgba(0,212,255,0.4);}
+    50%{box-shadow:0 0 20px rgba(0,212,255,0.8);}
+  }
+  .ai-name { font-family:'Cinzel',sans-serif; font-size:14px; font-weight:600; color:var(--accent); }
+  .ai-status { font-size:11px; color:var(--muted); }
+
+  .chat-box {
+    background:var(--panel); border:1px solid var(--border);
+    border-radius:12px; padding:14px; margin-bottom:12px;
+    min-height:300px; max-height:350px; overflow-y:auto;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .chat-box::-webkit-scrollbar { width:4px; }
+  .chat-box::-webkit-scrollbar-track { background:transparent; }
+  .chat-box::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  .msg { display:flex; gap:8px; align-items:flex-start; }
+  .msg.user { flex-direction:row-reverse; }
+  .msg-bubble {
+    max-width:80%; padding:10px 14px; border-radius:12px;
+    font-size:14px; line-height:1.5;
+  }
+  .msg.ai .msg-bubble {
+    background:rgba(0,212,255,0.08); border:1px solid rgba(0,212,255,0.2);
+    border-radius:4px 12px 12px 12px; color:var(--text);
+  }
+  .msg.user .msg-bubble {
+    background: linear-gradient(135deg, var(--accent2), rgba(124,58,237,0.5));
+    border:1px solid var(--accent2); border-radius:12px 4px 12px 12px;
+    color:#fff;
+  }
+  .msg-avatar { width:28px; height:28px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+  .msg.ai .msg-avatar { background:rgba(0,212,255,0.15); border:1px solid var(--accent); }
+  .msg.user .msg-avatar { background:rgba(124,58,237,0.3); border:1px solid var(--accent2); }
+
+  .typing { display:flex; gap:4px; align-items:center; padding:10px 14px; }
+  .typing span {
+    width:6px; height:6px; border-radius:50%; background:var(--accent);
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2){animation-delay:.2s;}
+  .typing span:nth-child(3){animation-delay:.4s;}
+  @keyframes bounce{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-8px);}}
+
+  .chat-input-row { display:flex; gap:8px; }
+  .chat-input {
+    flex:1; background:var(--panel); border:1px solid var(--border);
+    border-radius:10px; padding:11px 14px;
+    color:var(--text); font-family:'Rajdhani',sans-serif;
+    font-size:14px; outline:none;
+  }
+  .chat-input:focus { border-color:var(--accent); box-shadow:var(--glow); }
+  .chat-input::placeholder { color:var(--muted); }
+  .chat-send {
+    width:44px; height:44px; border-radius:10px;
+    background: linear-gradient(135deg,var(--accent2),var(--accent));
+    border:none; cursor:pointer; display:flex;
+    align-items:center; justify-content:center;
+    font-size:18px; transition:0.2s;
+  }
+  .chat-send:hover { opacity:0.8; }
+  .chat-send:disabled { opacity:0.4; cursor:not-allowed; }
+
+  .quick-btns { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .quick-btn {
+    padding:6px 12px; border-radius:20px;
+    border:1px solid var(--border);
+    background:rgba(255,255,255,0.03);
+    color:var(--muted); font-size:12px; cursor:pointer;
+    transition:0.2s; font-family:'Rajdhani',sans-serif;
+  }
+  .quick-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* ── BUTTON ── */
+  .btn {
+    width:100%; padding:14px; border-radius:10px;
+    border:none; cursor:pointer; font-family:'Rajdhani',sans-serif;
+    font-size:15px; font-weight:700; letter-spacing:1px;
+    text-transform:uppercase; transition:0.2s; margin-top:10px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color:#fff; box-shadow: 0 4px 15px rgba(124,58,237,0.3);
+  }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(124,58,237,0.4); }
+  .btn-outline {
+    background:transparent; border:1px solid var(--border);
+    color:var(--text);
+  }
+  .btn-outline:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+    background: linear-gradient(135deg,var(--accent2),var(--accent));
+    color:#fff; padding:12px 24px; border-radius:20px;
+    font-size:14px; font-weight:600; z-index:999;
+    opacity:0; transition:all 0.3s; pointer-events:none;
+    white-space:nowrap; box-shadow:var(--glow);
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ── LEVEL UP ── */
+  .levelup-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.85);
+    z-index:999; display:none; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center;
+  }
+  .levelup-overlay.show { display:flex; }
+  .levelup-text {
+    font-family:'Orbitron',sans-serif; font-size:48px; font-weight:900;
+    background: linear-gradient(135deg,var(--accent3),var(--gold));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    animation: glow-text 0.5s infinite alternate;
+    margin-bottom:16px;
+  }
+  @keyframes glow-text {
+    from{text-shadow:0 0 20px rgba(255,215,0,0.5);}
+    to{text-shadow:0 0 40px rgba(255,215,0,1);}
+  }
+  .levelup-sub { font-size:18px; color:var(--text); margin-bottom:24px; }
+  .levelup-close {
+    padding:12px 32px; background:linear-gradient(135deg,var(--accent2),var(--accent));
+    border:none; border-radius:10px; color:#fff;
+    font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700;
+    cursor:pointer; letter-spacing:1px;
+  }
+  .particles {
+    position:fixed; inset:0; pointer-events:none; z-index:998;
+  }
+  .particle {
+    position:absolute; width:8px; height:8px; border-radius:50%;
+    animation: float-up 1.5s ease-out forwards;
+  }
+  @keyframes float-up {
+    0%{transform:translateY(0) scale(1);opacity:1;}
+    100%{transform:translateY(-200px) scale(0);opacity:0;}
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position:fixed; bottom:0; left:0; right:0; z-index:100;
+    background:rgba(5,10,16,0.95); backdrop-filter:blur(12px);
+    border-top:1px solid var(--border);
+    display:flex; padding:8px 0 12px;
+  }
+  .bottom-btn {
+    flex:1; display:flex; flex-direction:column;
+    align-items:center; gap:3px;
+    background:none; border:none; cursor:pointer;
+    color:var(--muted); font-family:'Rajdhani',sans-serif;
+    font-size:10px; letter-spacing:0.5px; padding:4px 0;
+    transition:0.2s; text-transform:uppercase;
+  }
+  .bottom-btn.active, .bottom-btn:hover { color:var(--accent); }
+  .bottom-btn .icon { font-size:20px; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="nav">
+  <div class="nav-logo">LEVELUP</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div id="nav-xp" style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--accent3);">0 XP</div>
+    <div id="nav-lvl" style="font-family:'Orbitron',sans-serif;font-size:11px;color:var(--accent);background:rgba(0,212,255,0.1);padding:3px 8px;border-radius:4px;">LVL 1</div>
+  </div>
+</nav>
+
+<!-- SCREENS -->
+<!-- PERFIL -->
+<div class="screen active" id="screen-perfil">
+  <div class="hero-card">
+    <div class="hero-top">
+      <div class="hero-avatar" id="hero-avatar">⚔️</div>
+      <div class="hero-info">
+        <div class="hero-name" id="hero-name">Guerrero</div>
+        <div class="hero-class" id="hero-class">★ Iniciado ★</div>
+      </div>
+      <div>
+        <div class="hero-level" id="hero-level-big">1<span>NIVEL</span></div>
+      </div>
+    </div>
+    <div class="xp-bar-wrap">
+      <div class="xp-label">
+        <span>EXP</span>
+        <span id="xp-label-text">0 / 100</span>
+      </div>
+      <div class="xp-bar"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-val" id="stat-str">0</div>
+        <div class="stat-lbl">⚔️ Fuerza</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="stat-agi">0</div>
+        <div class="stat-lbl">💨 Agilidad</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-val" id="stat-end">0</div>
+        <div class="stat-lbl">🛡️ Resistencia</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="setup-panel">
+    <div class="sec-header"><div class="sec-title">Crear Personaje</div><div class="sec-line"></div></div>
+    <input id="name-input" class="chat-input" placeholder="Tu nombre de héroe..." style="width:100%;margin-bottom:10px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+      <div class="workout-card" onclick="selectClass('Guerrero','⚔️')" id="cls-Guerrero">
+        <div class="workout-emoji">⚔️</div>
+        <div class="workout-name">Guerrero</div>
+        <div class="workout-meta">Fuerza +2</div>
+      </div>
+      <div class="workout-card" onclick="selectClass('Arquero','🏹')" id="cls-Arquero">
+        <div class="workout-emoji">🏹</div>
+        <div class="workout-name">Arquero</div>
+        <div class="workout-meta">Agilidad +2</div>
+      </div>
+      <div class="workout-card" onclick="selectClass('Mago','🔮')" id="cls-Mago">
+        <div class="workout-emoji">🔮</div>
+        <div class="workout-name">Mago</div>
+        <div class="workout-meta">Resistencia +2</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="createHero()">⚡ COMENZAR AVENTURA</button>
+  </div>
+
+  <div id="stats-panel" style="display:none;">
+    <div class="sec-header"><div class="sec-title">Logros Recientes</div><div class="sec-line"></div></div>
+    <div id="achievements-list">
+      <div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;">Completa misiones para desbloquear logros ⚡</div>
+    </div>
+  </div>
+</div>
+
+<!-- MISIONES -->
+<div class="screen" id="screen-misiones">
+  <div class="sec-header"><div class="sec-title">⚔️ Misiones del Día</div><div class="sec-line"></div></div>
+  <div id="missions-list"></div>
+  <button class="btn btn-outline" onclick="resetMissions()" style="margin-top:4px;">🔄 Nuevo Día</button>
+</div>
+
+<!-- ENTRENAR -->
+<div class="screen" id="screen-entrenar">
+  <div class="sec-header"><div class="sec-title">🏋️ Rutinas</div><div class="sec-line"></div></div>
+  <div class="workout-grid" id="routine-grid"></div>
+  <div id="routine-detail" style="display:none;">
+    <div class="sec-header"><div class="sec-title" id="routine-title-text">Ejercicios</div><div class="sec-line"></div></div>
+    <div class="exercise-list" id="exercise-list"></div>
+    <button class="btn btn-primary" onclick="completeWorkout()" id="complete-workout-btn">⚡ COMPLETAR RUTINA (+50 XP)</button>
+    <button class="btn btn-outline" onclick="backToRoutines()">← Volver</button>
+  </div>
+</div>
+
+<!-- HÁBITOS -->
+<div class="screen" id="screen-habitos">
+  <div class="sec-header"><div class="sec-title">🌟 Hábitos</div><div class="sec-line"></div></div>
+  <div id="habits-list"></div>
+  <button class="btn btn-outline" onclick="addHabitPrompt()" style="margin-top:4px;">+ Añadir Hábito</button>
+</div>
+
+<!-- IA -->
+<div class="screen" id="screen-ia">
+  <div class="ai-header">
+    <div class="ai-orb">🤖</div>
+    <div>
+      <div class="ai-name">ARIA — Asistente IA</div>
+      <div class="ai-status">Entrenadora personal virtual • En línea</div>
+    </div>
+  </div>
+  <div class="quick-btns">
+    <div class="quick-btn" onclick="quickAsk('Dame una rutina de 15 minutos')">⚡ Rutina rápida</div>
+    <div class="quick-btn" onclick="quickAsk('Cómo mejorar mi fuerza')">💪 Ganar fuerza</div>
+    <div class="quick-btn" onclick="quickAsk('Consejos para mantener hábitos')">🌟 Hábitos</div>
+    <div class="quick-btn" onclick="quickAsk('Qué debo comer antes de entrenar')">🥗 Nutrición</div>
+  </div>
+  <div class="chat-box" id="chat-box"></div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chat-input" placeholder="Pregunta a ARIA..." onkeydown="if(event.key==='Enter')sendMsg()">
+    <button class="chat-send" id="send-btn" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bottom-btn active" onclick="showScreen('perfil')" id="btn-perfil">
+    <span class="icon">👤</span>Perfil
+  </button>
+  <button class="bottom-btn" onclick="showScreen('misiones')" id="btn-misiones">
+    <span class="icon">⚔️</span>Misiones
+  </button>
+  <button class="bottom-btn" onclick="showScreen('entrenar')" id="btn-entrenar">
+    <span class="icon">🏋️</span>Entrenar
+  </button>
+  <button class="bottom-btn" onclick="showScreen('habitos')" id="btn-habitos">
+    <span class="icon">🌟</span>Hábitos
+  </button>
+  <button class="bottom-btn" onclick="showScreen('ia')" id="btn-ia">
+    <span class="icon">🤖</span>ARIA
+  </button>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LEVEL UP -->
+<div class="levelup-overlay" id="levelup-overlay">
+  <div class="levelup-text">¡NIVEL UP!</div>
+  <div class="levelup-sub" id="levelup-sub">¡Has alcanzado el nivel <span id="new-level">2</span>!</div>
+  <button class="levelup-close" onclick="closeLevelUp()">¡CONTINUAR!</button>
+</div>
+<div class="particles" id="particles"></div>
+
+<script>
+// ── STATE ──
+let state = JSON.parse(localStorage.getItem('lvlup_state') || 'null') || {
+  hero: null, xp: 0, level: 1,
+  stats: {str:0, agi:0, end:0},
+  missions: [], habits: [],
+  completedWorkouts: 0,
+  achievements: [],
+  selectedClass: null
+};
+
+function save() { localStorage.setItem('lvlup_state', JSON.stringify(state)); }
+
+// ── DATA ──
+const MISSIONS_POOL = [
+  {name:'50 Sentadillas', desc:'Completa 50 sentadillas hoy', icon:'🦵', xp:30, diff:'easy'},
+  {name:'30 min de cardio', desc:'Corre, camina rápido o baila', icon:'🏃', xp:40, diff:'med'},
+  {name:'20 Flexiones', desc:'Haz 20 pushups (puedes dividirlos)', icon:'💪', xp:25, diff:'easy'},
+  {name:'Beber 2L de agua', desc:'Hidratación = poder +10', icon:'💧', xp:20, diff:'easy'},
+  {name:'Plancha 1 minuto', desc:'Aguanta la posición de plancha', icon:'🧘', xp:35, diff:'med'},
+  {name:'100 Saltos de tijera', desc:'Jumping jacks al máximo', icon:'⚡', xp:30, diff:'med'},
+  {name:'Estirar 10 min', desc:'Flexibilidad es clave para el guerrero', icon:'🤸', xp:15, diff:'easy'},
+  {name:'Dormir 7+ horas', desc:'El descanso forja héroes más fuertes', icon:'😴', xp:25, diff:'easy'},
+  {name:'1 hora sin celular', desc:'Entrena tu mente también', icon:'📵', xp:20, diff:'med'},
+  {name:'Rutina completa', desc:'Completa la rutina del día en Entrenar', icon:'🏋️', xp:60, diff:'hard'},
+  {name:'Sin azúcar hoy', desc:'Evita azúcar refinada todo el día', icon:'🚫', xp:45, diff:'hard'},
+  {name:'20 Abdominales', desc:'Core de acero, guerrero invencible', icon:'🎯', xp:25, diff:'easy'},
+];
+
+const ROUTINES = [
+  {
+    id:'full', name:'Cuerpo Completo', emoji:'⚡', time:'30 min', level:'Todos',
+    exercises:[
+      {name:'Calentamiento', sets:'5 min', xp:5},
+      {name:'Sentadillas', sets:'4x15 reps', xp:10},
+      {name:'Flexiones', sets:'3x12 reps', xp:10},
+      {name:'Zancadas', sets:'3x10 por pierna', xp:10},
+      {name:'Plancha', sets:'3x45 seg', xp:10},
+      {name:'Abdominales', sets:'3x20 reps', xp:10},
+    ]
+  },
+  {
+    id:'fuerza', name:'Fuerza Pura', emoji:'💪', time:'25 min', level:'Intermedio',
+    exercises:[
+      {name:'Flexiones explosivas', sets:'4x10 reps', xp:12},
+      {name:'Sentadillas profundas', sets:'4x12 reps', xp:12},
+      {name:'Fondos de silla', sets:'3x15 reps', xp:10},
+      {name:'Puentes de glúteo', sets:'4x20 reps', xp:10},
+      {name:'Superman (espalda)', sets:'3x15 reps', xp:6},
+    ]
+  },
+  {
+    id:'cardio', name:'Cardio Épico', emoji:'🏃', time:'20 min', level:'Todos',
+    exercises:[
+      {name:'Saltos de tijera', sets:'4x30 reps', xp:8},
+      {name:'Mountain climbers', sets:'4x20 reps', xp:10},
+      {name:'Burpees', sets:'3x10 reps', xp:15},
+      {name:'Sentadillas con salto', sets:'3x12 reps', xp:12},
+      {name:'Carrera en el lugar', sets:'3x30 seg', xp:5},
+    ]
+  },
+  {
+    id:'yoga', name:'Guerrero Zen', emoji:'🧘', time:'20 min', level:'Todos',
+    exercises:[
+      {name:'Pose del guerrero I', sets:'2x30 seg c/lado', xp:8},
+      {name:'Pose del guerrero II', sets:'2x30 seg c/lado', xp:8},
+      {name:'Perro boca abajo', sets:'3x20 seg', xp:6},
+      {name:'Torsión sentado', sets:'2x20 seg c/lado', xp:6},
+      {name:'Relajación total', sets:'5 min', xp:7},
+    ]
+  },
+];
+
+const DEFAULT_HABITS = [
+  {id:'h1', name:'Hacer ejercicio', icon:'🏋️', streak:0, days:[false,false,false,false,false,false,false], on:false},
+  {id:'h2', name:'Beber agua (2L)', icon:'💧', streak:0, days:[false,false,false,false,false,false,false], on:false},
+  {id:'h3', name:'Dormir 8 horas', icon:'😴', streak:0, days:[false,false,false,false,false,false,false], on:false},
+  {id:'h4', name:'Meditar', icon:'🧘', streak:0, days:[false,false,false,false,false,false,false], on:false},
+];
+
+// ── INIT ──
+function init() {
+  if (!state.missions.length) generateMissions();
+  if (!state.habits.length) state.habits = JSON.parse(JSON.stringify(DEFAULT_HABITS));
+  renderAll();
+  updateNav();
+  // Welcome AI message
+  if (document.getElementById('chat-box').children.length === 0) {
+    appendMsg('ai', '⚔️ ¡Hola, Héroe! Soy ARIA, tu entrenadora virtual. Estoy aquí para ayudarte a subir de nivel en la vida real. ¿Por dónde empezamos?');
+  }
+}
+
+function generateMissions() {
+  const shuffled = [...MISSIONS_POOL].sort(() => Math.random()-0.5).slice(0,5);
+  state.missions = shuffled.map((m,i) => ({...m, id:i, done:false}));
+  save();
+}
+
+function renderAll() {
+  renderMissions();
+  renderRoutines();
+  renderHabits();
+  updateHeroCard();
+}
+
+// ── SCREENS ──
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.bottom-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('btn-'+name).classList.add('active');
+}
+
+// ── HERO ──
+let selectedClass = null;
+function selectClass(cls, emoji) {
+  selectedClass = {name:cls, emoji:emoji};
+  document.querySelectorAll('[id^="cls-"]').forEach(e => e.classList.remove('selected'));
+  document.getElementById('cls-'+cls).classList.add('selected');
+}
+
+function createHero() {
+  const nameVal = document.getElementById('name-input').value.trim() || 'Héroe';
+  if (!selectedClass) { showToast('⚠️ Elige una clase primero'); return; }
+  state.hero = {name:nameVal, class:selectedClass.name, emoji:selectedClass.emoji};
+  if (selectedClass.name === 'Guerrero') state.stats.str += 2;
+  else if (selectedClass.name === 'Arquero') state.stats.agi += 2;
+  else state.stats.end += 2;
+  save();
+  document.getElementById('setup-panel').style.display = 'none';
+  document.getElementById('stats-panel').style.display = 'block';
+  updateHeroCard();
+  showToast('⚔️ ¡Bienvenido, '+nameVal+'! Tu aventura comienza.');
+}
+
+function updateHeroCard() {
+  if (!state.hero) return;
+  document.getElementById('hero-avatar').textContent = state.hero.emoji;
+  document.getElementById('hero-name').textContent = state.hero.name;
+  const classes = ['Iniciado','Aprendiz','Veterano','Élite','Legendario','Inmortal'];
+  document.getElementById('hero-class').textContent = '★ '+( classes[Math.min(state.level-1, classes.length-1)] )+' ★';
+  document.getElementById('hero-level-big').innerHTML = state.level+'<span>NIVEL</span>';
+  const xpNeeded = state.level * 100;
+  const pct = Math.min((state.xp / xpNeeded)*100, 100);
+  document.getElementById('xp-fill').style.width = pct+'%';
+  document.getElementById('xp-label-text').textContent = state.xp+' / '+xpNeeded;
+  document.getElementById('stat-str').textContent = state.stats.str;
+  document.getElementById('stat-agi').textContent = state.stats.agi;
+  document.getElementById('stat-end').textContent = state.stats.end;
+  updateNav();
+}
+
+function gainXP(amount, statKey) {
+  state.xp += amount;
+  if (statKey) state.stats[statKey] = (state.stats[statKey]||0) + Math.floor(amount/20);
+  const needed = state.level * 100;
+  if (state.xp >= needed) {
+    state.xp -= needed;
+    state.level++;
+    save();
+    updateHeroCard();
+    showLevelUp(state.level);
+    return;
+  }
+  save();
+  updateHeroCard();
+}
+
+function updateNav() {
+  document.getElementById('nav-xp').textContent = state.xp+' XP';
+  document.getElementById('nav-lvl').textContent = 'LVL '+state.level;
+}
+
+// ── MISSIONS ──
+function renderMissions() {
+  const list = document.getElementById('missions-list');
+  list.innerHTML = '';
+  state.missions.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'mission-card'+(m.done?' done':'');
+    el.onclick = () => completeMission(m.id);
+    el.innerHTML = `
+      <div class="mission-diff diff-${m.diff}"></div>
+      <div class="mission-icon">${m.icon}</div>
+      <div class="mission-info">
+        <div class="mission-name">${m.name}</div>
+        <div class="mission-desc">${m.desc}</div>
+      </div>
+      <div class="mission-xp">+${m.xp} XP</div>
+      <div class="mission-check">${m.done?'✓':''}</div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function completeMission(id) {
+  const m = state.missions.find(x => x.id===id);
+  if (!m || m.done) return;
+  m.done = true;
+  gainXP(m.xp, 'str');
+  save();
+  renderMissions();
+  showToast('⚡ +'+m.xp+' XP — Misión completada!');
+  addAchievement('⚔️ Misión: '+m.name);
+}
+
+function resetMissions() {
+  generateMissions();
+  renderMissions();
+  showToast('🔄 ¡Nuevas misiones disponibles!');
+}
+
+// ── ROUTINES ──
+let selectedRoutine = null;
+function renderRoutines() {
+  const grid = document.getElementById('routine-grid');
+  grid.innerHTML = '';
+  ROUTINES.forEach(r => {
+    const el = document.createElement('div');
+    el.className = 'workout-card';
+    el.onclick = () => openRoutine(r.id);
+    el.innerHTML = `
+      <div class="workout-emoji">${r.emoji}</div>
+      <div class="workout-name">${r.name}</div>
+      <div class="workout-meta">${r.time} • ${r.level}</div>
+    `;
+    grid.appendChild(el);
+  });
+}
+
+function openRoutine(id) {
+  selectedRoutine = ROUTINES.find(r => r.id===id);
+  document.getElementById('routine-grid').parentElement.querySelector('.sec-header').style.display='none';
+  document.getElementById('routine-grid').style.display='none';
+  document.getElementById('routine-detail').style.display='block';
+  document.getElementById('routine-title-text').textContent = selectedRoutine.emoji+' '+selectedRoutine.name;
+  const list = document.getElementById('exercise-list');
+  list.innerHTML = '';
+  selectedRoutine.exercises.forEach((ex,i) => {
+    list.innerHTML += `
+      <div class="exercise-item">
+        <div class="ex-num">${String(i+1).padStart(2,'0')}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-sets">${ex.sets}</div>
+        </div>
+        <div class="ex-xp">+${ex.xp} XP</div>
+      </div>`;
+  });
+  const totalXP = selectedRoutine.exercises.reduce((a,e)=>a+e.xp,0) + 50;
+  document.getElementById('complete-workout-btn').textContent = '⚡ COMPLETAR RUTINA (+'+totalXP+' XP)';
+}
+
+function backToRoutines() {
+  document.querySelector('#screen-entrenar .sec-header').style.display='flex';
+  document.getElementById('routine-grid').style.display='grid';
+  document.getElementById('routine-detail').style.display='none';
+}
+
+function completeWorkout() {
+  if (!selectedRoutine) return;
+  const totalXP = selectedRoutine.exercises.reduce((a,e)=>a+e.xp,0) + 50;
+  gainXP(totalXP, 'end');
+  state.completedWorkouts++;
+  save();
+  addAchievement('🏋️ Rutina: '+selectedRoutine.name);
+  showToast('🔥 ¡Rutina completada! +'+totalXP+' XP');
+  backToRoutines();
+}
+
+// ── HABITS ──
+function renderHabits() {
+  const list = document.getElementById('habits-list');
+  list.innerHTML = '';
+  state.habits.forEach(h => {
+    const el = document.createElement('div');
+    el.className = 'habit-item';
+    const dots = h.days.map(d=>`<div class="habit-dot${d?' done':''}"></div>`).join('');
+    el.innerHTML = `
+      <div class="habit-icon">${h.icon}</div>
+      <div class="habit-info">
+        <div class="habit-name">${h.name}</div>
+        <div class="habit-streak">🔥 Racha: ${h.streak} días</div>
+        <div class="habit-dots">${dots}</div>
+      </div>
+      <button class="habit-toggle ${h.on?'on':''}" onclick="toggleHabit('${h.id}')"></button>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function toggleHabit(id) {
+  const h = state.habits.find(x=>x.id===id);
+  if (!h) return;
+  h.on = !h.on;
+  const today = new Date().getDay();
+  h.days[today] = h.on;
+  if (h.on) {
+    h.streak++;
+    gainXP(15, 'agi');
+    showToast('🌟 +15 XP — ¡Hábito completado!');
+  }
+  save();
+  renderHabits();
+}
+
+function addHabitPrompt() {
+  const name = prompt('Nombre del hábito:');
+  if (!name) return;
+  const icons = ['⭐','🎯','📚','🎨','🧠','🏃','🥗','💤'];
+  const icon = icons[Math.floor(Math.random()*icons.length)];
+  state.habits.push({
+    id:'h'+Date.now(), name, icon, streak:0,
+    days:[false,false,false,false,false,false,false], on:false
+  });
+  save();
+  renderHabits();
+  showToast('✅ Hábito añadido');
+}
+
+// ── ACHIEVEMENTS ──
+function addAchievement(text) {
+  if (state.achievements.includes(text)) return;
+  state.achievements.push(text);
+  save();
+  const list = document.getElementById('achievements-list');
+  if (list.querySelector('div[style]')) list.innerHTML = '';
+  const el = document.createElement('div');
+  el.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;font-size:13px;';
+  el.textContent = text;
+  list.insertBefore(el, list.firstChild);
+}
+
+// ── AI CHAT ──
+function appendMsg(role, text) {
+  const box = document.getElementById('chat-box');
+  const div = document.createElement('div');
+  div.className = 'msg '+role;
+  div.innerHTML = `
+    <div class="msg-avatar">${role==='ai'?'🤖':'👤'}</div>
+    <div class="msg-bubble">${text}</div>
+  `;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('chat-box');
+  const div = document.createElement('div');
+  div.className = 'msg ai'; div.id = 'typing-indicator';
+  div.innerHTML = `<div class="msg-avatar">🤖</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+function hideTyping() {
+  const t = document.getElementById('typing-indicator');
+  if (t) t.remove();
+}
+
+async function sendMsg() {
+  const input = document.getElementById('chat-input');
+  const btn = document.getElementById('send-btn');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  btn.disabled = true;
+  appendMsg('user', text);
+  showTyping();
+
+  const heroCtx = state.hero
+    ? `El usuario se llama ${state.hero.name}, es un ${state.hero.class} de nivel ${state.level} con ${state.xp} XP. Stats: Fuerza ${state.stats.str}, Agilidad ${state.stats.agi}, Resistencia ${state.stats.end}.`
+    : 'El usuario aún no ha creado su personaje.';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`Eres ARIA, una entrenadora personal virtual dentro de una app de fitness gamificada tipo RPG llamada LEVELUP. 
+Tu tono es motivador, enérgico y usa metáforas de videojuegos RPG (niveles, misiones, XP, héroes, etc).
+Responde siempre en español. Sé concisa pero útil. Máximo 3-4 oraciones.
+Contexto del héroe: ${heroCtx}`,
+        messages:[{role:'user', content:text}]
+      })
+    });
+    const data = await res.json();
+    hideTyping();
+    const reply = data.content?.[0]?.text || '⚠️ Error al conectar con ARIA. Intenta de nuevo.';
+    appendMsg('ai', reply);
+  } catch(e) {
+    hideTyping();
+    appendMsg('ai', '⚠️ Sin conexión. Pero recuerda: ¡los verdaderos héroes entrenan sin excusas!');
+  }
+  btn.disabled = false;
+}
+
+function quickAsk(text) {
+  document.getElementById('chat-input').value = text;
+  sendMsg();
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── LEVEL UP ──
+function showLevelUp(lvl) {
+  document.getElementById('new-level').textContent = lvl;
+  document.getElementById('levelup-overlay').classList.add('show');
+  spawnParticles();
+}
+function closeLevelUp() {
+  document.getElementById('levelup-overlay').classList.remove('show');
+  document.getElementById('particles').innerHTML = '';
+}
+function spawnParticles() {
+  const container = document.getElementById('particles');
+  container.innerHTML = '';
+  const colors = ['#00d4ff','#7c3aed','#ffd700','#10b981','#f59e0b'];
+  for (let i=0;i<40;i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-delay:${Math.random()*0.5}s;
+      animation-duration:${1+Math.random()}s;
+    `;
+    container.appendChild(p);
+  }
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>
